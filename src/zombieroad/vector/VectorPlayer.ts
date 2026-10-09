@@ -12,6 +12,7 @@ export class VectorPlayer {
   public isShooting: boolean = false;
   public shootTimer: number = 0;
   public muzzleTimer: number = 0;
+  public aimAngle: number = 0;
   public hitFlashTimer: number = 0;
   public animTime: number = 0;
 
@@ -23,9 +24,10 @@ export class VectorPlayer {
     this.weaponDef = weaponDef;
   }
 
-  public triggerShoot(_aimAngle = 0) {
+  public triggerShoot(aimAngle = 0) {
     this.shootTimer = 0.18;
     this.muzzleTimer = 0.08;
+    this.aimAngle = Math.max(-0.4, Math.min(0.4, aimAngle));
   }
 
   public triggerHitFlash() {
@@ -257,6 +259,8 @@ export class VectorPlayer {
     // Weapon
     ctx.save();
     ctx.translate(4, weaponY);
+    // The weapon follows the target's vertical angle; mirror the angle when facing left.
+    ctx.rotate(this.facingRight ? this.aimAngle : -this.aimAngle);
     const wDef = this.weaponDef;
 
     if (wDef.id === 'shotgun') {
