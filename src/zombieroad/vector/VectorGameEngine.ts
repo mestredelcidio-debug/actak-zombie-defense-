@@ -409,6 +409,29 @@ export class VectorGameEngine {
       }
     }
 
+    // 3b. Player-vs-zombie body collision.
+    // Keep the survivor and living zombies on opposite sides unless the player is
+    // high enough in a jump to pass over a ground-level enemy.
+    if (!playerBlockedX && this.player.y < 18) {
+      for (const zombie of this.zombies) {
+        if (zombie.isDead) continue;
+        const playerHalf = this.player.width / 2;
+        const zombieHalf = zombie.width / 2;
+        const overlaps = nextPlayerX + playerHalf > zombie.x - zombieHalf &&
+          nextPlayerX - playerHalf < zombie.x + zombieHalf;
+        if (!overlaps) continue;
+
+        playerBlockedX = true;
+        this.player.vx = 0;
+        if (this.inputMoveX > 0) {
+          this.player.x = zombie.x - zombieHalf - playerHalf - 0.5;
+        } else if (this.inputMoveX < 0) {
+          this.player.x = zombie.x + zombieHalf + playerHalf + 0.5;
+        }
+        break;
+      }
+    }
+
     if (!playerBlockedX) {
       this.player.x = nextPlayerX;
     }
@@ -627,7 +650,22 @@ export class VectorGameEngine {
         }
 
         if (!zBlocked) {
-          z.x = nextX;
+          // Solid body collision with the survivor: zombies may approach and attack,
+          // but never walk through the player's body.
+          const playerHalf = this.player.width / 2;
+          const zombieHalf = z.width / 2;
+          const crossesPlayer = this.player.y < 18 &&
+            ((z.x >= playerX && nextX - zombieHalf < playerX + playerHalf && nextX > playerX) ||
+             (z.x < playerX && nextX + zombieHalf > playerX - playerHalf && nextX < playerX));
+          if (crossesPlayer) {
+            z.x = z.x >= playerX
+              ? playerX + playerHalf + zombieHalf + 0.5
+              : playerX - playerHalf - zombieHalf - 0.5;
+            z.vx = 0;
+            z.isAttacking = true;
+          } else {
+            z.x = nextX;
+          }
         }
 
         // Apply vertical physics
