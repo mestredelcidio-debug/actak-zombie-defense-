@@ -103,6 +103,12 @@ export class VectorPlayer {
     ctx.fill();
     ctx.stroke();
 
+    // Reinforced knee pad
+    ctx.fillStyle = isHit ? '#ffffff' : '#475569';
+    ctx.beginPath(); ctx.roundRect(-3.1, 8, 6.2, 4.5, 1.5); ctx.fill();
+    ctx.strokeStyle = outlineColor; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = isHit ? '#ffffff' : '#94a3b8'; ctx.fillRect(-1.2, 9, 2.4, 1);
+
     // Back Boot
     ctx.fillStyle = '#0f172a';
     ctx.beginPath();
@@ -133,6 +139,24 @@ export class VectorPlayer {
     ctx.fill();
     ctx.stroke();
 
+    // Reinforced tactical vest panels and stitched seams
+    ctx.fillStyle = isHit ? '#ffffff' : '#334155';
+    ctx.beginPath();
+    ctx.moveTo(-6, -8); ctx.lineTo(-2, -6); ctx.lineTo(-2, 5); ctx.lineTo(-6, 7); ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(6, -8); ctx.lineTo(2, -6); ctx.lineTo(2, 5); ctx.lineTo(6, 7); ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = isHit ? '#ffffff' : '#64748b';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(-1, -6); ctx.lineTo(-1, 5); ctx.moveTo(1, -6); ctx.lineTo(1, 5); ctx.stroke();
+
+    // Radio pouch and utility pocket
+    ctx.fillStyle = isHit ? '#ffffff' : '#1e293b';
+    ctx.fillRect(-7, -2, 4, 6); ctx.fillRect(3, -1, 4, 5);
+    ctx.fillStyle = isHit ? '#ffffff' : '#94a3b8';
+    ctx.fillRect(-6, -1, 2, 1); ctx.fillRect(4, 0, 2, 1);
+
     // Belt & Buckle
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(-8, 7, 16, 4);
@@ -151,6 +175,12 @@ export class VectorPlayer {
     ctx.roundRect(-3.5, 0, 7, 18, 2.5);
     ctx.fill();
     ctx.stroke();
+
+    // Reinforced knee pad
+    ctx.fillStyle = isHit ? '#ffffff' : '#475569';
+    ctx.beginPath(); ctx.roundRect(-3.1, 8, 6.2, 4.5, 1.5); ctx.fill();
+    ctx.strokeStyle = outlineColor; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = isHit ? '#ffffff' : '#94a3b8'; ctx.fillRect(-1.2, 9, 2.4, 1);
 
     // Front Boot
     ctx.fillStyle = '#0f172a';
@@ -270,6 +300,12 @@ export class VectorPlayer {
       ctx.strokeRect(0, -3, 13, 5);
       ctx.fillRect(1, 2, 4, 4); // Grip
     }
+
+    // Front forearm cuff links the sleeve to the weapon grip
+    ctx.fillStyle = jacketColor;
+    ctx.strokeStyle = outlineColor;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect(1, -1, 8, 4, 1.5); ctx.fill(); ctx.stroke();
 
     // Front Hand holding gun
     ctx.fillStyle = skinColor;
