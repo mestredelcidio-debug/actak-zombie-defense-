@@ -283,11 +283,24 @@ export class VectorZombie {
     ctx.fill();
     ctx.stroke();
 
-    // Blood stain on shirt
+    // Torn fabric, exposed wound and ragged hem make the silhouette less generic.
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.moveTo(-6, 8); ctx.lineTo(-3, 11); ctx.lineTo(-1, 8);
+    ctx.lineTo(2, 12); ctx.lineTo(5, 8); ctx.lineTo(7, 10);
+    ctx.lineTo(7, 12); ctx.lineTo(-7, 12); ctx.closePath();
+    ctx.fill();
+
+    // Blood stain and wound detail
     ctx.fillStyle = '#7f1d1d';
     ctx.beginPath();
-    ctx.arc(-1, 2, 3.5, 0, Math.PI * 2);
+    ctx.ellipse(-1, 2, 3.5, 4.5, -0.25, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = '#450a0a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-4, -2); ctx.lineTo(-1, 1); ctx.lineTo(-3, 4);
+    ctx.stroke();
     ctx.restore();
 
     // 4. FRONT LEG
