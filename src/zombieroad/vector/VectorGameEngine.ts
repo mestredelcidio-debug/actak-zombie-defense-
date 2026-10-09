@@ -139,9 +139,9 @@ export class VectorGameEngine {
     // first procedural chunk could place every zombie hundreds of pixels off-screen,
     // making the game look empty while the player waited for enemies to approach.
     this.zombies.push(
-      new VectorZombie('common', this.player.x + 330),
-      new VectorZombie('runner', this.player.x + 520),
-      new VectorZombie('common', this.player.x + 690),
+      new VectorZombie('common', this.player.x + 135),
+      new VectorZombie('runner', this.player.x + 245),
+      new VectorZombie('common', this.player.x + 365),
     );
 
     // Keep the procedural world ahead of the player, but don't delay the first encounter.
