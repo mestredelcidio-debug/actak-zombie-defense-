@@ -134,6 +134,7 @@ export const HUD: React.FC<HUDProps> = ({
           <span className="text-[10px] font-mono font-bold text-slate-100">{remainingToCheckpoint}m</span>
         </div>
         <div className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-200">Alcance o posto de controle</div>
+        <div className="mt-0.5 text-[9px] font-medium text-emerald-200/90">+15 moedas e recupera 1 vida</div>
         <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-slate-700/90">
           <div className="h-full rounded-full bg-emerald-400 transition-[width] duration-200" style={{ width: `${checkpointProgress}%` }} />
         </div>
