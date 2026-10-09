@@ -67,9 +67,17 @@ export class VectorPlayer {
     const pantsColor = isHit ? '#ffffff' : `#${this.charDef.pantsColor.toString(16).padStart(6, '0')}`;
     const hairColor = `#${this.charDef.hairColor.toString(16).padStart(6, '0')}`;
     const backpackColor = `#${this.charDef.backpackColor.toString(16).padStart(6, '0')}`;
-    const skinColor = isHit ? '#ffffff' : '#f59e0b';
-    const darkSkinColor = isHit ? '#ffffff' : '#d97706';
+    const skinColor = isHit ? '#ffffff' : '#c6a58a';
+    const darkSkinColor = isHit ? '#ffffff' : '#8f6f5b';
     const outlineColor = '#090d16';
+
+    // Cinematic contact shadow keeps the survivor grounded in the dim interior.
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(1, -2, 20, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
 
     // 1. Drop Shadow under feet
     ctx.save();
