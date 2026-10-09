@@ -188,6 +188,27 @@ export class VectorEnvironment {
       ctx.stroke();
     }
 
+    // Reflexos frios no piso e sujeira acumulada para dar profundidade ao corredor.
+    const floorGlow = ctx.createRadialGradient(
+      effectiveWidth * 0.52, groundY + 22, 12,
+      effectiveWidth * 0.52, groundY + 34, effectiveWidth * 0.46
+    );
+    floorGlow.addColorStop(0, 'rgba(157, 190, 226, 0.16)');
+    floorGlow.addColorStop(0.42, 'rgba(87, 119, 157, 0.08)');
+    floorGlow.addColorStop(1, 'rgba(8, 12, 20, 0)');
+    ctx.fillStyle = floorGlow;
+    ctx.fillRect(-100, groundY - 12, effectiveWidth + 200, effectiveHeight - groundY + 100);
+
+    // Pequenas manchas escuras e marcas de sangue antigas no rodapé/piso.
+    for (let i = 0; i < 18; i++) {
+      const stainX = ((i * 173 - camX * 0.62) % (effectiveWidth + 260)) - 100;
+      const stainY = groundY + 12 + (i % 5) * 19;
+      ctx.fillStyle = i % 3 === 0 ? 'rgba(75, 15, 22, 0.24)' : 'rgba(0, 0, 0, 0.22)';
+      ctx.beginPath();
+      ctx.ellipse(stainX, stainY, 5 + (i % 4) * 3, 1.5 + (i % 3), -0.18, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     // Vinheta cinematográfica nas bordas do cenário.
     const vignette = ctx.createRadialGradient(
       effectiveWidth * 0.5, groundY * 0.55, Math.min(80, effectiveWidth * 0.08),
