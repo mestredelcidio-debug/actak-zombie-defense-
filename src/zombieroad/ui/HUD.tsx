@@ -39,6 +39,10 @@ export const HUD: React.FC<HUDProps> = ({
   onToggleSound,
   onToggleMusic,
 }) => {
+  const checkpointDistance = (Math.floor(distance / 150) + 1) * 150;
+  const checkpointProgress = Math.min(100, ((distance % 150) / 150) * 100);
+  const remainingToCheckpoint = Math.max(0, checkpointDistance - distance);
+
   return (
     <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-3 select-none z-30 font-sans">
       {/* ==========================================
@@ -120,6 +124,18 @@ export const HUD: React.FC<HUDProps> = ({
           >
             <Pause className="w-4 h-4 fill-current" />
           </button>
+        </div>
+      </div>
+
+      {/* Mission objective: a clear reason to keep advancing, without auto-running. */}
+      <div className="pointer-events-none absolute top-[4.6rem] left-1/2 -translate-x-1/2 w-[min(19rem,58vw)] rounded-xl border border-emerald-500/35 bg-slate-950/85 px-3 py-2 shadow-lg backdrop-blur-md">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[9px] font-black uppercase tracking-[0.16em] text-emerald-300">OBJETIVO</span>
+          <span className="text-[10px] font-mono font-bold text-slate-100">{remainingToCheckpoint}m</span>
+        </div>
+        <div className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-200">Alcance o posto de controle</div>
+        <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-slate-700/90">
+          <div className="h-full rounded-full bg-emerald-400 transition-[width] duration-200" style={{ width: `${checkpointProgress}%` }} />
         </div>
       </div>
 
