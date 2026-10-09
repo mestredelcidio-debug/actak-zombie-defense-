@@ -39,9 +39,18 @@ export const HUD: React.FC<HUDProps> = ({
   onToggleSound,
   onToggleMusic,
 }) => {
-  const checkpointDistance = (Math.floor(distance / 150) + 1) * 150;
+  const checkpointIndex = Math.floor(distance / 150);
+  const checkpointDistance = (checkpointIndex + 1) * 150;
   const checkpointProgress = Math.min(100, ((distance % 150) / 150) * 100);
   const remainingToCheckpoint = Math.max(0, checkpointDistance - distance);
+  const missionStages = [
+    { title: 'Alcance o posto de controle', reward: '+15 moedas e recupera 1 vida' },
+    { title: 'Atravesse a zona infestada', reward: 'Prepare-se para mais inimigos' },
+    { title: 'Procure suprimentos na estrada', reward: 'Fique atento às moedas e aos obstáculos' },
+    { title: 'Abra caminho até a zona segura', reward: 'O próximo marco libera sua recompensa' },
+    { title: 'Avance até a área de evacuação', reward: 'Sobreviva e mantenha distância dos zumbis' },
+  ];
+  const missionStage = missionStages[checkpointIndex % missionStages.length];
 
   return (
     <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-3 select-none z-30 font-sans">
@@ -133,8 +142,8 @@ export const HUD: React.FC<HUDProps> = ({
           <span className="text-[9px] font-black uppercase tracking-[0.16em] text-emerald-300">OBJETIVO</span>
           <span className="text-[10px] font-mono font-bold text-slate-100">{remainingToCheckpoint}m</span>
         </div>
-        <div className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-200">Alcance o posto de controle</div>
-        <div className="mt-0.5 text-[9px] font-medium text-emerald-200/90">+15 moedas e recupera 1 vida</div>
+        <div className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-200">{missionStage.title}</div>
+        <div className="mt-0.5 text-[9px] font-medium text-emerald-200/90">{missionStage.reward}</div>
         <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-slate-700/90">
           <div className="h-full rounded-full bg-emerald-400 transition-[width] duration-200" style={{ width: `${checkpointProgress}%` }} />
         </div>
