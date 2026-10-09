@@ -36,6 +36,8 @@ export class VectorGameEngine {
   public maxHearts: number = 3;
   public distanceRun: number = 0;
   public maxDistanceReached: number = 0;
+  public nextCheckpointDistance: number = 150;
+  public checkpointsReached: number = 0;
   public runCoins: number = 0;
   public runZombiesKilled: number = 0;
   public runDamageTaken: number = 0;
@@ -125,12 +127,24 @@ export class VectorGameEngine {
 
     this.distanceRun = 0;
     this.maxDistanceReached = 0;
+    this.nextCheckpointDistance = 150;
+    this.checkpointsReached = 0;
     this.runCoins = 0;
     this.runZombiesKilled = 0;
     this.runDamageTaken = 0;
     this.runStartTime = performance.now();
     this.shootCooldown = 0;
 
+    // Start every run with visible threats near the survivor. Previously the
+    // first procedural chunk could place every zombie hundreds of pixels off-screen,
+    // making the game look empty while the player waited for enemies to approach.
+    this.zombies.push(
+      new VectorZombie('common', this.player.x + 135),
+      new VectorZombie('runner', this.player.x + 245),
+      new VectorZombie('common', this.player.x + 365),
+    );
+
+    // Keep the procedural world ahead of the player, but don't delay the first encounter.
     this.chunkGen.reset(18);
     this.state = 'PLAYING';
 
@@ -359,6 +373,19 @@ export class VectorGameEngine {
       this.onDistanceUpdate(this.distanceRun);
     }
 
+    // Checkpoints are real milestones, not just a HUD counter. Rewards are granted
+    // once per 150m reached, even if the survivor later retreats.
+    while (this.maxDistanceReached >= this.nextCheckpointDistance) {
+      this.checkpointsReached += 1;
+      this.playerStats.coins += 15;
+      this.runCoins += 15;
+      this.currentHearts = Math.min(this.maxHearts, this.currentHearts + 1);
+      this.nextCheckpointDistance += 150;
+      sound.playCoin();
+      savePlayerStats(this.playerStats);
+      this.onStatsUpdate(this.playerStats, this.currentHearts, this.maxHearts);
+    }
+
     // 3. Update Player Physics, Velocity and Obstacle Collisions
     const moveSpeed = this.player.charDef.speedMultiplier * 52;
     const isMoving = this.inputMoveX !== 0;
@@ -406,6 +433,29 @@ export class VectorGameEngine {
           this.player.vx = 0;
           break;
         }
+      }
+    }
+
+    // 3b. Player-vs-zombie body collision.
+    // Keep the survivor and living zombies on opposite sides unless the player is
+    // high enough in a jump to pass over a ground-level enemy.
+    if (!playerBlockedX && this.player.y < 18) {
+      for (const zombie of this.zombies) {
+        if (zombie.isDead) continue;
+        const playerHalf = this.player.width / 2;
+        const zombieHalf = zombie.width / 2;
+        const overlaps = nextPlayerX + playerHalf > zombie.x - zombieHalf &&
+          nextPlayerX - playerHalf < zombie.x + zombieHalf;
+        if (!overlaps) continue;
+
+        playerBlockedX = true;
+        this.player.vx = 0;
+        if (this.inputMoveX > 0) {
+          this.player.x = zombie.x - zombieHalf - playerHalf - 0.5;
+        } else if (this.inputMoveX < 0) {
+          this.player.x = zombie.x + zombieHalf + playerHalf + 0.5;
+        }
+        break;
       }
     }
 
@@ -554,7 +604,15 @@ export class VectorGameEngine {
       const distToPlayer = z.x - playerX;
       z.facingRight = false;
 
-      if (distToPlayer <= targetDist + 6) {
+      const shouldLeap = z.def.type === 'jumper' && z.isGrounded &&
+        z.jumpCooldown <= 0 && distToPlayer > 65 && distToPlayer < 240;
+      if (shouldLeap) {
+        z.vy = 9.4;
+        z.isGrounded = false;
+        z.jumpCooldown = 2.5;
+        z.isAttacking = false;
+        z.vx = -z.def.speed * 18 * z.speedMultiplier * 1.18;
+      } else if (distToPlayer <= targetDist + 6 && z.isGrounded) {
         z.isAttacking = true;
         z.vx = 0;
       } else {
@@ -569,7 +627,15 @@ export class VectorGameEngine {
       const distToPlayer = playerX - z.x;
       z.facingRight = true;
 
-      if (distToPlayer <= targetDist + 6) {
+      const shouldLeap = z.def.type === 'jumper' && z.isGrounded &&
+        z.jumpCooldown <= 0 && distToPlayer > 65 && distToPlayer < 240;
+      if (shouldLeap) {
+        z.vy = 9.4;
+        z.isGrounded = false;
+        z.jumpCooldown = 2.5;
+        z.isAttacking = false;
+        z.vx = z.def.speed * 18 * z.speedMultiplier * 1.18;
+      } else if (distToPlayer <= targetDist + 6 && z.isGrounded) {
         z.isAttacking = true;
         z.vx = 0;
       } else {
@@ -627,7 +693,22 @@ export class VectorGameEngine {
         }
 
         if (!zBlocked) {
-          z.x = nextX;
+          // Solid body collision with the survivor: zombies may approach and attack,
+          // but never walk through the player's body.
+          const playerHalf = this.player.width / 2;
+          const zombieHalf = z.width / 2;
+          const crossesPlayer = this.player.y < 18 &&
+            ((z.x >= playerX && nextX - zombieHalf < playerX + playerHalf && nextX > playerX) ||
+             (z.x < playerX && nextX + zombieHalf > playerX - playerHalf && nextX < playerX));
+          if (crossesPlayer) {
+            z.x = z.x >= playerX
+              ? playerX + playerHalf + zombieHalf + 0.5
+              : playerX - playerHalf - zombieHalf - 0.5;
+            z.vx = 0;
+            z.isAttacking = true;
+          } else {
+            z.x = nextX;
+          }
         }
 
         // Apply vertical physics

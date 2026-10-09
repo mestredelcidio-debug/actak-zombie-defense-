@@ -7,8 +7,8 @@ export class VectorZombie {
   public y: number = 0;
   public vx: number = 0;
   public vy: number = 0;
-  public width: number = 24;
-  public height: number = 56;
+  public width: number = 30;
+  public height: number = 68;
   public isGrounded: boolean = true;
   public isDead: boolean = false;
   public hp: number;
@@ -25,6 +25,8 @@ export class VectorZombie {
   public attackTimer: number = 0;
   public attackInterval: number = 0.65; // Seconds between hand claw strikes
   public attackHitDelivered: boolean = false;
+  public jumpCooldown: number = 1.4 + Math.random() * 1.2;
+  private wasAttacking: boolean = false;
   public facingRight: boolean = false;
   public slashTrailProgress: number = 0;
 
@@ -48,15 +50,15 @@ export class VectorZombie {
       this.attackInterval = 0.45;
     } else if (this.def.type === 'crawler') {
       this.attackInterval = 0.55;
-      this.height = 42;
+      this.height = 48;
     } else if (this.def.type === 'brute') {
       this.attackInterval = 0.85;
-      this.width = 28;
-      this.height = 62;
+      this.width = 34;
+      this.height = 74;
     } else if (this.def.type === 'boss_mutant') {
       this.attackInterval = 0.8;
-      this.width = 32;
-      this.height = 68;
+      this.width = 38;
+      this.height = 82;
     }
   }
 
@@ -88,9 +90,19 @@ export class VectorZombie {
   public updateAttack(dt: number, onHit: (damage: number) => void): boolean {
     if (this.isDead || !this.isAttacking) {
       this.slashTrailProgress = 0;
+      this.wasAttacking = false;
+      this.attackTimer = 0;
+      this.attackHitDelivered = false;
       return false;
     }
 
+    // Every strike has a readable wind-up instead of dealing instant damage
+    // the first frame a zombie reaches the survivor.
+    if (!this.wasAttacking) {
+      this.attackTimer = 0;
+      this.attackHitDelivered = false;
+      this.wasAttacking = true;
+    }
     this.attackTimer += dt;
     const cycle = this.attackTimer % this.attackInterval;
     const progress = cycle / this.attackInterval;
@@ -116,6 +128,7 @@ export class VectorZombie {
 
   public update(dt: number, groundY: number) {
     if (this.hitFlashTimer > 0) this.hitFlashTimer -= dt;
+    if (this.jumpCooldown > 0) this.jumpCooldown -= dt;
 
     if (this.isDead && this.isRagdoll) {
       this.ragdollTime += dt;
@@ -177,28 +190,28 @@ export class VectorZombie {
     const isHit = this.hitFlashTimer > 0;
     const type = this.def.type;
 
-    let shirtColor = isHit ? '#ffffff' : '#3b82f6';
-    let pantsColor = isHit ? '#ffffff' : '#1e293b';
-    let skinColor = isHit ? '#ffffff' : '#4ade80';
+    let shirtColor = isHit ? '#ffffff' : '#565b59';
+    let pantsColor = isHit ? '#ffffff' : '#252a2d';
+    let skinColor = isHit ? '#ffffff' : '#879487';
     const outlineColor = '#090d16';
 
     if (type === 'runner') {
-      shirtColor = isHit ? '#ffffff' : '#dc2626';
-      skinColor = isHit ? '#ffffff' : '#22c55e';
+      shirtColor = isHit ? '#ffffff' : '#694343';
+      skinColor = isHit ? '#ffffff' : '#a2a08a';
     } else if (type === 'jumper') {
-      shirtColor = isHit ? '#ffffff' : '#7e22ce';
-      skinColor = isHit ? '#ffffff' : '#a855f7';
+      shirtColor = isHit ? '#ffffff' : '#49434e';
+      skinColor = isHit ? '#ffffff' : '#969487';
     } else if (type === 'crawler') {
-      shirtColor = isHit ? '#ffffff' : '#65a30d';
-      skinColor = isHit ? '#ffffff' : '#84cc16';
+      shirtColor = isHit ? '#ffffff' : '#4d5840';
+      skinColor = isHit ? '#ffffff' : '#929d78';
     } else if (type === 'brute') {
-      shirtColor = isHit ? '#ffffff' : '#b45309';
-      pantsColor = isHit ? '#ffffff' : '#334155';
-      skinColor = isHit ? '#ffffff' : '#15803d';
+      shirtColor = isHit ? '#ffffff' : '#6b4b32';
+      pantsColor = isHit ? '#ffffff' : '#292f35';
+      skinColor = isHit ? '#ffffff' : '#747f69';
     } else if (type === 'boss_mutant') {
-      shirtColor = isHit ? '#ffffff' : '#991b1b';
-      pantsColor = isHit ? '#ffffff' : '#450a0a';
-      skinColor = isHit ? '#ffffff' : '#166534';
+      shirtColor = isHit ? '#ffffff' : '#5b292b';
+      pantsColor = isHit ? '#ffffff' : '#25191b';
+      skinColor = isHit ? '#ffffff' : '#66715d';
     }
 
     // Drop Shadow
@@ -283,11 +296,24 @@ export class VectorZombie {
     ctx.fill();
     ctx.stroke();
 
-    // Blood stain on shirt
+    // Torn fabric, exposed wound and ragged hem make the silhouette less generic.
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.moveTo(-6, 8); ctx.lineTo(-3, 11); ctx.lineTo(-1, 8);
+    ctx.lineTo(2, 12); ctx.lineTo(5, 8); ctx.lineTo(7, 10);
+    ctx.lineTo(7, 12); ctx.lineTo(-7, 12); ctx.closePath();
+    ctx.fill();
+
+    // Blood stain and wound detail
     ctx.fillStyle = '#7f1d1d';
     ctx.beginPath();
-    ctx.arc(-1, 2, 3.5, 0, Math.PI * 2);
+    ctx.ellipse(-1, 2, 3.5, 4.5, -0.25, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = '#450a0a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-4, -2); ctx.lineTo(-1, 1); ctx.lineTo(-3, 4);
+    ctx.stroke();
     ctx.restore();
 
     // 4. FRONT LEG

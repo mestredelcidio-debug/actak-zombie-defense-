@@ -39,6 +39,19 @@ export const HUD: React.FC<HUDProps> = ({
   onToggleSound,
   onToggleMusic,
 }) => {
+  const checkpointIndex = Math.floor(distance / 150);
+  const checkpointDistance = (checkpointIndex + 1) * 150;
+  const checkpointProgress = Math.min(100, ((distance % 150) / 150) * 100);
+  const remainingToCheckpoint = Math.max(0, checkpointDistance - distance);
+  const missionStages = [
+    { title: 'Alcance o posto de controle', reward: '+15 moedas e recupera 1 vida' },
+    { title: 'Atravesse a zona infestada', reward: 'Prepare-se para mais inimigos' },
+    { title: 'Procure suprimentos na estrada', reward: 'Fique atento às moedas e aos obstáculos' },
+    { title: 'Abra caminho até a zona segura', reward: 'O próximo marco libera sua recompensa' },
+    { title: 'Avance até a área de evacuação', reward: 'Sobreviva e mantenha distância dos zumbis' },
+  ];
+  const missionStage = missionStages[checkpointIndex % missionStages.length];
+
   return (
     <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-3 select-none z-30 font-sans">
       {/* ==========================================
@@ -123,6 +136,19 @@ export const HUD: React.FC<HUDProps> = ({
         </div>
       </div>
 
+      {/* Mission objective: a clear reason to keep advancing, without auto-running. */}
+      <div className="pointer-events-none absolute top-[4.6rem] left-1/2 -translate-x-1/2 w-[min(19rem,58vw)] rounded-xl border border-emerald-500/35 bg-slate-950/85 px-3 py-2 shadow-lg backdrop-blur-md">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[9px] font-black uppercase tracking-[0.16em] text-emerald-300">OBJETIVO</span>
+          <span className="text-[10px] font-mono font-bold text-slate-100">{remainingToCheckpoint}m</span>
+        </div>
+        <div className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-200">{missionStage.title}</div>
+        <div className="mt-0.5 text-[9px] font-medium text-emerald-200/90">{missionStage.reward}</div>
+        <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-slate-700/90">
+          <div className="h-full rounded-full bg-emerald-400 transition-[width] duration-200" style={{ width: `${checkpointProgress}%` }} />
+        </div>
+      </div>
+
       {/* Weapon Info Badge (Clickable to switch/upgrade) */}
       <button
         onClick={onOpenShop}
@@ -149,17 +175,7 @@ export const HUD: React.FC<HUDProps> = ({
         <div className="flex items-center gap-2.5">
           {/* Move Left */}
           <button
-            onTouchStart={(e) => {
-              e.preventDefault();
-              onMoveLeft();
-            }}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              onStopMove();
-            }}
-            onMouseDown={onMoveLeft}
-            onMouseUp={onStopMove}
-            onMouseLeave={onStopMove}
+            onPointerDown={(e) => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); onMoveLeft(); }} onPointerUp={(e) => { e.preventDefault(); onStopMove(); }} onPointerCancel={onStopMove} onLostPointerCapture={onStopMove}
             className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-slate-900/90 backdrop-blur-md border-2 border-slate-700 active:border-cyan-400 active:bg-cyan-950/60 active:scale-95 transition-all shadow-xl flex flex-col items-center justify-center text-slate-200 active:text-cyan-300 cursor-pointer select-none touch-manipulation"
             title="Mover para Esquerda"
           >
@@ -169,17 +185,7 @@ export const HUD: React.FC<HUDProps> = ({
 
           {/* Move Right */}
           <button
-            onTouchStart={(e) => {
-              e.preventDefault();
-              onMoveRight();
-            }}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              onStopMove();
-            }}
-            onMouseDown={onMoveRight}
-            onMouseUp={onStopMove}
-            onMouseLeave={onStopMove}
+            onPointerDown={(e) => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); onMoveRight(); }} onPointerUp={(e) => { e.preventDefault(); onStopMove(); }} onPointerCancel={onStopMove} onLostPointerCapture={onStopMove}
             className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-slate-900/90 backdrop-blur-md border-2 border-slate-700 active:border-cyan-400 active:bg-cyan-950/60 active:scale-95 transition-all shadow-xl flex flex-col items-center justify-center text-slate-200 active:text-cyan-300 cursor-pointer select-none touch-manipulation"
             title="Mover para Direita"
           >
@@ -192,11 +198,7 @@ export const HUD: React.FC<HUDProps> = ({
         <div className="flex items-center gap-3 sm:gap-4">
           {/* ATIRAR Button (Raises gun and shoots bullets that kill zombies) */}
           <button
-            onTouchStart={(e) => {
-              e.preventDefault();
-              onShoot();
-            }}
-            onClick={onShoot}
+            onPointerDown={(e) => { e.preventDefault(); onShoot(); }}
             className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-amber-600 via-orange-500 to-amber-400 active:scale-90 transition-all shadow-[0_8px_25px_rgba(249,115,22,0.6)] border-3 border-amber-200 flex flex-col items-center justify-center text-slate-950 font-black cursor-pointer select-none touch-manipulation group"
           >
             <Flame className="w-8 h-8 sm:w-9 sm:h-9 fill-slate-950 text-slate-950 group-active:scale-110 transition-transform" />
@@ -207,11 +209,7 @@ export const HUD: React.FC<HUDProps> = ({
 
           {/* PULAR Button (Large with Up Arrow) */}
           <button
-            onTouchStart={(e) => {
-              e.preventDefault();
-              onJump();
-            }}
-            onClick={onJump}
+            onPointerDown={(e) => { e.preventDefault(); onJump(); }}
             className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-blue-600 via-cyan-500 to-sky-300 active:scale-90 transition-all shadow-[0_10px_30px_rgba(6,182,212,0.65)] border-3 border-cyan-100 flex flex-col items-center justify-center text-slate-950 font-black cursor-pointer select-none touch-manipulation group"
           >
             <svg
