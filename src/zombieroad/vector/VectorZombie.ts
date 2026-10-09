@@ -25,6 +25,8 @@ export class VectorZombie {
   public attackTimer: number = 0;
   public attackInterval: number = 0.65; // Seconds between hand claw strikes
   public attackHitDelivered: boolean = false;
+  public jumpCooldown: number = 1.4 + Math.random() * 1.2;
+  private wasAttacking: boolean = false;
   public facingRight: boolean = false;
   public slashTrailProgress: number = 0;
 
@@ -88,9 +90,19 @@ export class VectorZombie {
   public updateAttack(dt: number, onHit: (damage: number) => void): boolean {
     if (this.isDead || !this.isAttacking) {
       this.slashTrailProgress = 0;
+      this.wasAttacking = false;
+      this.attackTimer = 0;
+      this.attackHitDelivered = false;
       return false;
     }
 
+    // Every strike has a readable wind-up instead of dealing instant damage
+    // the first frame a zombie reaches the survivor.
+    if (!this.wasAttacking) {
+      this.attackTimer = 0;
+      this.attackHitDelivered = false;
+      this.wasAttacking = true;
+    }
     this.attackTimer += dt;
     const cycle = this.attackTimer % this.attackInterval;
     const progress = cycle / this.attackInterval;
@@ -116,6 +128,7 @@ export class VectorZombie {
 
   public update(dt: number, groundY: number) {
     if (this.hitFlashTimer > 0) this.hitFlashTimer -= dt;
+    if (this.jumpCooldown > 0) this.jumpCooldown -= dt;
 
     if (this.isDead && this.isRagdoll) {
       this.ragdollTime += dt;
