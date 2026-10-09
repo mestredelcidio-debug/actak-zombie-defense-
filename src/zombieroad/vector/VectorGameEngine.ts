@@ -36,6 +36,8 @@ export class VectorGameEngine {
   public maxHearts: number = 3;
   public distanceRun: number = 0;
   public maxDistanceReached: number = 0;
+  public nextCheckpointDistance: number = 150;
+  public checkpointsReached: number = 0;
   public runCoins: number = 0;
   public runZombiesKilled: number = 0;
   public runDamageTaken: number = 0;
@@ -125,6 +127,8 @@ export class VectorGameEngine {
 
     this.distanceRun = 0;
     this.maxDistanceReached = 0;
+    this.nextCheckpointDistance = 150;
+    this.checkpointsReached = 0;
     this.runCoins = 0;
     this.runZombiesKilled = 0;
     this.runDamageTaken = 0;
@@ -357,6 +361,19 @@ export class VectorGameEngine {
     if (this.distanceRun > this.maxDistanceReached) {
       this.maxDistanceReached = this.distanceRun;
       this.onDistanceUpdate(this.distanceRun);
+    }
+
+    // Checkpoints are real milestones, not just a HUD counter. Rewards are granted
+    // once per 150m reached, even if the survivor later retreats.
+    while (this.maxDistanceReached >= this.nextCheckpointDistance) {
+      this.checkpointsReached += 1;
+      this.playerStats.coins += 15;
+      this.runCoins += 15;
+      this.currentHearts = Math.min(this.maxHearts, this.currentHearts + 1);
+      this.nextCheckpointDistance += 150;
+      sound.playCoin();
+      savePlayerStats(this.playerStats);
+      this.onStatsUpdate(this.playerStats, this.currentHearts, this.maxHearts);
     }
 
     // 3. Update Player Physics, Velocity and Obstacle Collisions
