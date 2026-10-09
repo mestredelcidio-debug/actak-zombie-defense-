@@ -135,6 +135,16 @@ export class VectorGameEngine {
     this.runStartTime = performance.now();
     this.shootCooldown = 0;
 
+    // Start every run with visible threats near the survivor. Previously the
+    // first procedural chunk could place every zombie hundreds of pixels off-screen,
+    // making the game look empty while the player waited for enemies to approach.
+    this.zombies.push(
+      new VectorZombie('common', this.player.x + 330),
+      new VectorZombie('runner', this.player.x + 520),
+      new VectorZombie('common', this.player.x + 690),
+    );
+
+    // Keep the procedural world ahead of the player, but don't delay the first encounter.
     this.chunkGen.reset(18);
     this.state = 'PLAYING';
 
