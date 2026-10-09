@@ -594,7 +594,15 @@ export class VectorGameEngine {
       const distToPlayer = z.x - playerX;
       z.facingRight = false;
 
-      if (distToPlayer <= targetDist + 6) {
+      const shouldLeap = z.def.type === 'jumper' && z.isGrounded &&
+        z.jumpCooldown <= 0 && distToPlayer > 65 && distToPlayer < 240;
+      if (shouldLeap) {
+        z.vy = 9.4;
+        z.isGrounded = false;
+        z.jumpCooldown = 2.5;
+        z.isAttacking = false;
+        z.vx = -z.def.speed * 18 * z.speedMultiplier * 1.18;
+      } else if (distToPlayer <= targetDist + 6 && z.isGrounded) {
         z.isAttacking = true;
         z.vx = 0;
       } else {
@@ -609,7 +617,15 @@ export class VectorGameEngine {
       const distToPlayer = playerX - z.x;
       z.facingRight = true;
 
-      if (distToPlayer <= targetDist + 6) {
+      const shouldLeap = z.def.type === 'jumper' && z.isGrounded &&
+        z.jumpCooldown <= 0 && distToPlayer > 65 && distToPlayer < 240;
+      if (shouldLeap) {
+        z.vy = 9.4;
+        z.isGrounded = false;
+        z.jumpCooldown = 2.5;
+        z.isAttacking = false;
+        z.vx = z.def.speed * 18 * z.speedMultiplier * 1.18;
+      } else if (distToPlayer <= targetDist + 6 && z.isGrounded) {
         z.isAttacking = true;
         z.vx = 0;
       } else {
