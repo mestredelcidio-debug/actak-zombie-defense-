@@ -39,6 +39,12 @@ export class VectorPlayer {
     if (this.muzzleTimer > 0) this.muzzleTimer -= dt;
     if (this.hitFlashTimer > 0) this.hitFlashTimer -= dt;
 
+    // Ease the muzzle back to a ready position after each shot.
+    if (this.shootTimer <= 0) {
+      this.aimAngle += (0 - this.aimAngle) * Math.min(1, dt * 8);
+      if (Math.abs(this.aimAngle) < 0.01) this.aimAngle = 0;
+    }
+
     if (isMoving && this.isGrounded) {
       this.animTime += dt * 9;
     } else if (!isMoving) {
