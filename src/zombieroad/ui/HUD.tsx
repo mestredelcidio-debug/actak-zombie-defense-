@@ -196,7 +196,9 @@ export const HUD: React.FC<HUDProps> = ({
               e.preventDefault();
               onShoot();
             }}
-            onClick={onShoot}
+            onClick={(e) => {
+              if (e.detail > 0 && !('ontouchstart' in window)) onShoot();
+            }
             className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-amber-600 via-orange-500 to-amber-400 active:scale-90 transition-all shadow-[0_8px_25px_rgba(249,115,22,0.6)] border-3 border-amber-200 flex flex-col items-center justify-center text-slate-950 font-black cursor-pointer select-none touch-manipulation group"
           >
             <Flame className="w-8 h-8 sm:w-9 sm:h-9 fill-slate-950 text-slate-950 group-active:scale-110 transition-transform" />
@@ -211,7 +213,9 @@ export const HUD: React.FC<HUDProps> = ({
               e.preventDefault();
               onJump();
             }}
-            onClick={onJump}
+            onClick={(e) => {
+              if (e.detail > 0 && !('ontouchstart' in window)) onJump();
+            }
             className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-blue-600 via-cyan-500 to-sky-300 active:scale-90 transition-all shadow-[0_10px_30px_rgba(6,182,212,0.65)] border-3 border-cyan-100 flex flex-col items-center justify-center text-slate-950 font-black cursor-pointer select-none touch-manipulation group"
           >
             <svg
