@@ -124,7 +124,55 @@ export class VectorEnvironment {
     ctx.ellipse(0, 0, width / 2 + 4, 4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    if (obs.type === 'car_wreck') {
+    if (obs.type === 'bus_wreck') {
+      // Long abandoned city bus: layered body, windows, broken glass and heavy wheels.
+      ctx.fillStyle = '#78350f';
+      ctx.strokeStyle = '#090d16';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(-width / 2, -height * 0.72, width, height * 0.72, 5);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#334155';
+      ctx.beginPath();
+      ctx.roundRect(-width * 0.44, -height, width * 0.88, height * 0.36, 3);
+      ctx.fill();
+      ctx.stroke();
+
+      // Individual side windows
+      ctx.fillStyle = '#0f172a';
+      for (let i = 0; i < 5; i++) {
+        const windowX = -width * 0.38 + i * width * 0.155;
+        ctx.fillRect(windowX, -height * 0.94, width * 0.115, height * 0.22);
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(windowX, -height * 0.94, width * 0.115, height * 0.22);
+      }
+
+      // Cracked windshield and rust streaks
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(width * 0.24, -height * 0.97);
+      ctx.lineTo(width * 0.16, -height * 0.76);
+      ctx.lineTo(width * 0.28, -height * 0.82);
+      ctx.stroke();
+      ctx.fillStyle = '#c2410c';
+      ctx.fillRect(-width * 0.2, -height * 0.62, width * 0.28, 3);
+
+      ctx.fillStyle = '#020617';
+      ctx.beginPath();
+      ctx.arc(-width * 0.32, -2, 9, 0, Math.PI * 2);
+      ctx.arc(width * 0.32, -2, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(-width * 0.32, -2, 4, 0, Math.PI * 2);
+      ctx.arc(width * 0.32, -2, 4, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (obs.type === 'car_wreck') {
       // Vector Abandoned Car Wreck
       ctx.fillStyle = '#7c2d12'; // Rusty Maroon
       ctx.strokeStyle = '#090d16';
