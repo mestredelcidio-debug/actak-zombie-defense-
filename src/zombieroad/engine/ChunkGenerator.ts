@@ -68,7 +68,10 @@ export class ChunkGenerator {
       // - OBSTACLE: Rock or Wooden Crate
       // - FAR SIDE: Jumper/Common zombie behind obstacle
       const obsX = startX + 10;
-      const hasRock = Math.random() < 0.5;
+      const obstacleRoll = Math.random();
+      const obstacleType: ObstacleType = obstacleRoll < 0.34 ? 'rock' : obstacleRoll < 0.67 ? 'crate' : 'fence';
+      const obstacleWidth = obstacleType === 'fence' ? 1.4 : 1.0;
+      const obstacleHeight = obstacleType === 'fence' ? 1.0 : 0.8;
 
       // Zombie on Near Side (coming immediately for player!)
       zombies.push({ type: 'common', x: obsX - 4.5, y: 0 });
@@ -76,11 +79,11 @@ export class ChunkGenerator {
       // Obstacle
       obstacles.push({
         id: `obs_${obsX}`,
-        type: hasRock ? 'rock' : 'crate',
+        type: obstacleType,
         x: obsX,
         y: 0,
-        width: 1.0,
-        height: 0.8,
+        width: obstacleWidth,
+        height: obstacleHeight,
         jumpable: true,
         destructible: false,
       });
@@ -124,7 +127,7 @@ export class ChunkGenerator {
 
         // Far side jumper leaps over hole towards player
         zombies.push({ type: 'jumper', x: holeX + holeWidth / 2 + 4.5, y: 0 });
-      } else if (dangerType < 0.7) {
+      } else if (dangerType < 0.55) {
         // Abandoned Car Wreck with Squad on BOTH sides!
         const carX = startX + 10;
 
@@ -151,6 +154,22 @@ export class ChunkGenerator {
         // Runner & Jumper on the other side leaping over car!
         zombies.push({ type: 'jumper', x: carX + 5.0, y: 0 });
         zombies.push({ type: 'runner', x: carX + 8.5, y: 0 });
+      } else if (dangerType < 0.7) {
+        // A heavier bus blocks more of the road and forces a deliberate jump.
+        const busX = startX + 11;
+        zombies.push({ type: 'common', x: busX - 5.5, y: 0 });
+        zombies.push({ type: 'jumper', x: busX + 6.5, y: 0 });
+        obstacles.push({
+          id: `bus_${busX}`,
+          type: 'bus_wreck',
+          x: busX,
+          y: 0,
+          width: 3.8,
+          height: 1.45,
+          jumpable: true,
+          destructible: false,
+        });
+        this.generateCoinArc(busX - 2, 6, coins);
       } else {
         // Construction Brute + Barrels Barrier
         const barrelX = startX + 9;
