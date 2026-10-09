@@ -1,0 +1,86 @@
+import { ColorDef } from '../types/waterSort';
+
+export const WATER_COLORS: Record<string, ColorDef> = {
+  red: {
+    id: 'red',
+    name: 'Vermelho',
+    color: '#ef4444',
+    gradientTop: '#f87171',
+    gradientBottom: '#b91c1c',
+    glow: 'rgba(239, 68, 68, 0.4)',
+  },
+  purple: {
+    id: 'purple',
+    name: 'Roxo',
+    color: '#8b5cf6',
+    gradientTop: '#a78bfa',
+    gradientBottom: '#6d28d9',
+    glow: 'rgba(139, 92, 246, 0.4)',
+  },
+  yellow: {
+    id: 'yellow',
+    name: 'Amarelo',
+    color: '#fbbf24',
+    gradientTop: '#fde047',
+    gradientBottom: '#d97706',
+    glow: 'rgba(251, 191, 36, 0.4)',
+  },
+  blue: {
+    id: 'blue',
+    name: 'Azul',
+    color: '#3b82f6',
+    gradientTop: '#60a5fa',
+    gradientBottom: '#1d4ed8',
+    glow: 'rgba(59, 130, 246, 0.4)',
+  },
+  cyan: {
+    id: 'cyan',
+    name: 'Ciano',
+    color: '#06b6d4',
+    gradientTop: '#38bdf8',
+    gradientBottom: '#0284c7',
+    glow: 'rgba(6, 182, 212, 0.4)',
+  },
+  green: {
+    id: 'green',
+    name: 'Verde',
+    color: '#22c55e',
+    gradientTop: '#4ade80',
+    gradientBottom: '#15803d',
+    glow: 'rgba(34, 197, 94, 0.4)',
+  },
+  orange: {
+    id: 'orange',
+    name: 'Laranja',
+    color: '#f97316',
+    gradientTop: '#fb923c',
+    gradientBottom: '#c2410c',
+    glow: 'rgba(249, 115, 22, 0.4)',
+  },
+  pink: {
+    id: 'pink',
+    name: 'Rosa',
+    color: '#ec4899',
+    gradientTop: '#f472b6',
+    gradientBottom: '#be185d',
+    glow: 'rgba(236, 72, 153, 0.4)',
+  },
+  violet: {
+    id: 'violet',
+    name: 'Índigo Escuro',
+    color: '#581c87',
+    gradientTop: '#7e22ce',
+    gradientBottom: '#3b0764',
+    glow: 'rgba(88, 28, 135, 0.4)',
+  },
+  lime: {
+    id: 'lime',
+    name: 'Lima',
+    color: '#84cc16',
+    gradientTop: '#a3e635',
+    gradientBottom: '#4d7c0f',
+    glow: 'rgba(132, 204, 22, 0.4)',
+  },
+};
+
+export const COLOR_KEYS = Object.keys(WATER_COLORS);

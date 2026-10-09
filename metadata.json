@@ -1,0 +1,6 @@
+{
+  "name": "Sector Quarantine: Breach & Clear",
+  "description": "Fast-paced mobile 2D physics zombie survival game. Defend abandoned facilities with ragdoll physics reactions, manage resources, and sweep dark rooms in intense cleanup operations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
