@@ -152,7 +152,7 @@ export class VectorEnvironment {
     }
 
     // Facho de lanterna no centro: ilumina a zona jogável e mantém as bordas sombrias.
-    const lightX = Math.max(160, Math.min(effectiveWidth - 160, thisLightX(camX, effectiveWidth)));
+    const lightX = Math.max(160, Math.min(effectiveWidth - 160, (effectiveWidth * 0.52 + ((camX * 0.04) % 120) - 60)));
     const beam = ctx.createRadialGradient(lightX, groundY - 170, 8, lightX, groundY - 150, Math.max(240, effectiveWidth * 0.38));
     beam.addColorStop(0, 'rgba(214, 231, 255, 0.38)');
     beam.addColorStop(0.48, 'rgba(174, 199, 230, 0.13)');
